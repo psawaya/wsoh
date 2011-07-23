@@ -1,0 +1,135 @@
+<html>
+    <head>
+        <script src="/static/d3/d3.js"></script>
+        <script src="/static/d3/d3.layout.js"></script>
+        <script src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
+        <script src="/static/jquery-ui/js/jquery-ui-1.8.14.custom.min.js"></script>
+        <script src="/static/graph.js"></script>
+		<!--<script src="/static/fb-source.js"></script>-->
+		<div id="fb-root"></div>
+		<script src="http://connect.facebook.net/en_US/all.js"></script>
+		<script>
+		FB.init({
+		    appId  : '259190380763066',
+		    status : true, // check login status
+		    cookie : true, // enable cookies to allow the server to access the session
+		    xfbml  : true  // parse XFBML
+		  });
+		
+		FB.getLoginStatus(function(response) {
+		  if (response.session) {
+			document.getElementById('fb-login').style.display = "none";
+		    getStream();
+		  } else {
+		    // no user session available, someone you dont know
+		  }
+		});
+		</script>
+		<script type="text/javascript">
+		var stream = "";
+		var sortedStream = {};
+		
+		var userUUID = '{{ userUUID }}';
+
+		function loginFB() {
+			FB.login(function(response) {
+			  if (response.session) {
+			    // user successfully logged in
+				document.getElementById('fb-login').style.display = "none";
+				getStream();
+
+			  } else {
+			    // user cancelled login
+			  }}, {perms: 'read_stream, offline_access'});
+		}
+
+		// download and prepare stream
+		function getStream () {
+		    document.getElementById('loading-info').style.display = 'block';
+			document.getElementById('yt').innerHTML = '<iframe width="640" height="510" src="http://www.youtube.com/embed/0Bmhjf0rKe8?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>';
+			FB.api('/me/home', 'GET', {'limit':500, 'date_format': 'U'}, function(response) {
+				stream = response['data'];
+				for (x in stream) {
+					sortedStream[cleanName(stream[x]['from']['name'])] = stream[x];
+				}
+				console.log(sortedStream);
+				// Loaded FB data
+				document.getElementById('loading-info').style.display = 'none';
+				document.getElementById('chart').style.display = 'block';
+			});
+		}
+
+		// users is array of user IDs of which posts should be shown
+		function postsWithUsers (users) {
+			// Loop over sorted stream and get the posts
+			posts = [];
+			for (x in users) {
+				if (sortedStream[cleanName(users[x])] != undefined)
+					posts.push(sortedStream[cleanName(users[x])]);
+			}
+			return posts.sort(postsSorter);
+		}
+
+		// Sorts entries based on their publish dates
+		function postsSorter (a, b) {
+			if (a.created_time > b.created_time)
+				return -1;
+			else if (a.created_time == b.created_time)
+				return 0;
+			else
+				return 1;
+		} 
+
+		function cleanName (name) {
+			return name.replace(/ /g, '');
+		}
+
+		// Renders a post
+		function renderPost(post) {
+			var html = '';
+			if (post != undefined) {
+				html = '<div style="margin-top: 40px; min-height: 45px;"><div style="float:left;"><img src="https://graph.facebook.com/'+post.from.id+'/picture"></div><div style="margin-left: 60px;"><a href="http://www.facebook.com/profile.php?id='+post.from.id+'">'+post.from.name+'</a><br>';
+				if (post.message != undefined) {
+					html = html+'<p style="margin-top: 5px;">'+post.message+'</p>';
+				}
+
+				if (post.picture != undefined) {
+					html = html + '<img src="'+post.picture+'" style="margin-top: 10px;">';
+				}
+
+				html = html+'</div></div>';
+			}
+			return html;
+		}
+		
+		function updateStream(users) {
+			// get posts
+			posts = postsWithUsers(users);
+			document.getElementById("stream").innerHTML = '';
+			if (posts != undefined && posts.length > 0) {
+				for (var x in posts) {
+					console.log(posts[x]);
+					document.getElementById("stream").innerHTML = document.getElementById("stream").innerHTML+renderPost(posts[x]);
+				}
+			} else {
+				document.getElementById("stream").innerHTML = 'No recent posts';
+			}
+		}
+		
+		</script>
+        <link rel="stylesheet" type="text/css" href="/static/style.css"/>
+        <link rel="stylesheet" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
+    </head>
+    <body>
+        <div id="info"></div>
+        <div id="slider"></div>
+        <div id="chart" style="display:none; width: 800px; float:left;"></div>
+		<div id="stream" style="float:right; width: 500px; overflow:auto; height:900px;"></div>
+		<div id="loading-info" style="display:none;"><div style="width: 800px; margin-left: auto; margin-right: auto; text-align: center;">
+			<h1 style="margin-bottom: 20px;">Performing magic, enjoy this video in the meantime</h1>
+			<div id="yt"></div>
+			</div>
+		</div>
+		<div id="fb-login" style="display:block;"><div style="text-align:center; margin-top: 50px;"><a hreF="#" onclick="loginFB();" style="font-size:20px;">Login to Facebook</a></div></div>
+    </body>
+</html>
