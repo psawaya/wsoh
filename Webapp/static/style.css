@@ -5,6 +5,11 @@ circle {
   stroke-width: 1px;
 }
 
+g[selected=true] > circle {
+  fill: rgb(91, 179, 250);
+  stroke: rgb(150, 200, 150);
+}
+
 .leaf circle {
   fill: #ff7f0e;
   fill-opacity: 1;

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-    var w = 960,
-        h = 960,
+    var w = 640,
+        h = 640,
         format = d3.format(",d");
 
     var pack = d3.layout.pack()
@@ -40,6 +40,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         newNodes.filter(function(d) { return !!d.group; })
                 .on("click", function(d, i) {
+                    d3.selectAll('g.node').attr("selected", function(){return false});
+                    d3.select(this).attr("selected", function(){return true});
                     var leaves = [];
                     function getLeaves(node) {
                         if (node.group){

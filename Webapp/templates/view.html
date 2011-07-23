@@ -56,6 +56,7 @@
 				// Loaded FB data
 				document.getElementById('loading-info').style.display = 'none';
 				document.getElementById('chart').style.display = 'block';
+				document.getElementById('stream').style.display = 'block';
 			});
 		}
 
@@ -119,17 +120,42 @@
 		</script>
         <link rel="stylesheet" type="text/css" href="/static/style.css"/>
         <link rel="stylesheet" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css"/>
+		<style>
+		body {
+			font-family: sans-serif;
+		}
+		.clearfix:after {
+		     visibility: hidden;
+		     display: block;
+		     font-size: 0;
+		     content: " ";
+		     clear: both;
+		     height: 0;
+		     }
+		.clearfix { display: inline-block; }
+		/* start commented backslash hack \*/
+		* html .clearfix { height: 1%; }
+		.clearfix { display: block; }
+		/* close commented backslash hack */
+		</style>
     </head>
     <body>
-        <div id="info"></div>
-        <div id="slider"></div>
-        <div id="chart" style="display:none; width: 800px; float:left;"></div>
-		<div id="stream" style="float:right; width: 500px; overflow:auto; height:900px;"></div>
-		<div id="loading-info" style="display:none;"><div style="width: 800px; margin-left: auto; margin-right: auto; text-align: center;">
+		<h1 style="width:100%;padding:10px;height:30px;"><span style="margin: 0 auto;">FB Circles - without the pain of grouping again and again!</span></h1>
+		<div id="wrapper">
+        <div id="info" style="width:31.3%;background-color:#eee;float:right;height:30px;padding:3px;"></div>
+        <div id="slider" style="float:left;width:67%;"></div>
+		<div class="clearfix"></div>
+		</div>
+        <div id-"wrapper" style="background-color:#aaa;">
+		<div id="chart" style="display:none; width: 65%; float:left;padding:10px;"></div>
+		<div id="stream" style="display: none; float:right; min-height:660px; width: 30%; overflow-x:hidden; height:auto; background-color:#ccc;padding:10px;"></div>
+		<div id="loading-info" style="display:none;"><div style="width: 100%; margin-left: auto; margin-right: auto; text-align: center;">
 			<h1 style="margin-bottom: 20px;">Performing magic, enjoy this video in the meantime</h1>
 			<div id="yt"></div>
 			</div>
 		</div>
 		<div id="fb-login" style="display:block;"><div style="text-align:center; margin-top: 50px;"><a hreF="#" onclick="loginFB();" style="font-size:20px;">Login to Facebook</a></div></div>
+		<div class="clearfix"></div>
+		</div><!--close wrapper-->
     </body>
 </html>
